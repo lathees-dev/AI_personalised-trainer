@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communication Assessment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        p
+        {
+            color: #fff
+        }
+
+        h1 {
+            color: #4caf50;
+            font-size: 2.5rem;
+        }
+
+        #testSection {
+            margin-top: 20px;
+        }
+
+        #statement {
+            font-size: 1.5rem;
+            font-weight: bold;
+
+            margin-bottom: 20px;
+        }
+
+        #userSpeech {
+            font-size: 1.2rem;
+            color: #007bff;
+            font-style: italic;
+            margin: 10px 0;
+        }
+
+        #feedback {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff5722;
+        }
+
+        .highlight {
+            background-color: #ffcccc;
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #retryButton {
+            background-color: #f44336;
+        }
+
+        #retryButton:hover {
+            background-color: #d32f2f;
+        }
+
+        #nextButton {
+            background-color: #008CBA;
+        }
+
+        #nextButton:hover {
+            background-color: #007bb5;
+        }
+       .actions {
+           margin-top: 20px;
+           display: flex;
+           justify-content: center;
+           gap: 10px;
+       }
+
+       .action-button {
+           background-color: #007bff;
+           color: #fff;
+           border: none;
+           padding: 10px 20px;
+           border-radius: 5px;
+           cursor: pointer;
+           font-size: 1rem;
+           transition: all 0.3s ease;
+       }
+
+        .action-button:hover {
+             background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Communication Assessment</h1>
+    <div id="testSection">
+        <p><strong>Question:</strong> <span id="questionNumber">1</span>/10</p>
+        <p><strong>Statement:</strong> <span id="statement"></span></p>
+        <p><strong>Your Speech:</strong> <span id="userSpeech"></span></p>
+        <p id="feedback"></p>
+        <button id="startTest">Start Test</button>
+        <div class="actions" style="display: none;">
+           <form  id="try-again-form">
+              <button class="action-button">Try Again</button>
+           </form>
+          <form  id="next-question-form">
+              <button class="action-button">Next Question</button>
+           </form>
+       </div>
+    </div>
+
+    <script>
+        let recognition;
+        let currentQuestion = 0;
+        let totalMarks = 0;
+        let attempts = 0;
+        const totalQuestions = 10;
+        const maxAttempts = 2;
+
+      function highlightMismatchedWords(correctStatement, userSpeech) {
+        const cleanText = (text) => {
+            return text.toLowerCase().replace(/[^a-z0-9\s]/gi, '');
+         };
+          const correctWords = cleanText(correctStatement).trim().split(" ");
+         const userWords = cleanText(userSpeech).trim().split(" ");
+         let highlightedStatement = "";
+          let mismatchCount = 0;
+
+        for (let i = 0; i < correctWords.length; i++) {
+            if (userWords[i] && correctWords[i] === userWords[i]) {
+                highlightedStatement += `${correctWords[i]} `;
+             } else {
+                highlightedStatement += `<span class="highlight">${correctWords[i]}</span> `;
+                 mismatchCount++;
+            }
+         }
+        return { highlightedStatement: highlightedStatement.trim(), mismatchCount };
+    }
+
+        function fetchAndDisplayStatement() {
+            attempts = 0; // Reset attempts for new question
+            document.querySelector('.actions').style.display = 'none';
+            fetch('/generate_speaking_statement/')
+                .then(response => response.json())
+                .then(data => {
+                    const statement = data.statement;
+                    document.getElementById('statement').innerText = statement;
+                    document.getElementById('feedback').innerText = "";
+                    document.getElementById('userSpeech').innerText = "";
+
+                    document.getElementById('questionNumber').innerText = currentQuestion + 1;
+
+                    setTimeout(() => {
+                        document.getElementById('feedback').innerText = "Please start speaking now.";
+                        startMic(statement);
+                    }, 5000);
+                });
+        }
+
+        function startMic(correctStatement) {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert('Speech recognition not supported in this browser.');
+                return;
+            }
+
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'en-US';
+
+            recognition.onresult = function (event) {
+                const userSpeech = event.results[0][0].transcript.trim();
+                document.getElementById('userSpeech').innerText = userSpeech;
+
+                const { highlightedStatement, mismatchCount } = highlightMismatchedWords(correctStatement, userSpeech);
+                 const actionsDiv = document.querySelector('.actions');
+
+                if (mismatchCount <= 1) {
+                    totalMarks++;
+                    document.getElementById('feedback').innerHTML = `Correct! You have ${mismatchCount} mismatch${mismatchCount === 1 ? "" : "es"}. Great job!`;
+                     actionsDiv.style.display = 'block';
+                   document.getElementById('try-again-form').style.display = 'none';
+
+                } else {
+                     attempts++;
+                     document.getElementById('feedback').innerHTML = `Incorrect. The correct sentence is: ${highlightedStatement}`;
+                    actionsDiv.style.display = 'block';
+                   if(attempts >= maxAttempts)
+                   {
+                         document.getElementById('try-again-form').style.display = 'none';
+                   }
+                 }
+            };
+
+            recognition.onspeechend = function () {
+                recognition.stop();
+            };
+
+            recognition.onerror = function () {
+                 document.getElementById('feedback').innerText = "Something went wrong. Please try again.";
+                 document.querySelector('.actions').style.display = 'block';
+              document.getElementById('try-again-form').style.display = 'block';
+            };
+
+            recognition.start();
+        }
+
+        document.getElementById('startTest').addEventListener('click', function () {
+            fetchAndDisplayStatement();
+            this.style.display = 'none';
+        });
+
+        document.getElementById('try-again-form').addEventListener('submit', function(event){
+            event.preventDefault();
+            document.getElementById('feedback').innerText = "";
+             const actionsDiv = document.querySelector('.actions');
+             actionsDiv.style.display = "none";
+            startMic(document.getElementById('statement').innerText);
+        });
+
+        document.getElementById('next-question-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            if (currentQuestion < totalQuestions - 1) {
+                currentQuestion++;
+                fetchAndDisplayStatement();
+                  document.querySelector('.actions').style.display = 'none';
+            } else {
+                document.getElementById('feedback').innerText = `Assessment complete! Your score is ${totalMarks}/10.`;
+                   document.querySelector('.actions').style.display = 'none';
+            }
+       });
+
+    </script>
+</body>
+</html>
