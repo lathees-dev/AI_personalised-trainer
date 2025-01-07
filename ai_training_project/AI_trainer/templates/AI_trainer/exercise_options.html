@@ -1,9 +1,10 @@
+<!-- exercise_options.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Trainer - Home</title>
+    <title>{{ exercise_type }} Exercise Options</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,57 +49,39 @@
             text-decoration: none;
             padding: 10px 15px;
             font-weight: bold;
-            font-size:22px;
+            font-size: 22px;
             border-radius: 5px;
             margin: 10px auto 15px;
             width: 80%;
             transition: background-color 0.3s;
+            background-color: #28a745;
         }
         .option-card a:hover {
-            background-color:rgb(105, 163, 226);
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
-    <h1>AI Trainer</h1>
+    <h1>{{ exercise_type }} Exercises</h1>
     <div class="options">
         <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Communication" alt="Communication">
-            <a href="{% url 'AI_trainer:communication_options' %}">Communication</a>
-
+            <img src="https://via.placeholder.com/200x150?text=Learn" alt="Learn">
+            <a href="{% url 'AI_trainer:learn_exercise' exercise_type %}">Learn</a>
         </div>
         <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Self+Intro" alt="Self Intro">
-            <a href="{% url 'AI_trainer:self_intro_options' %}">Self Intro</a>
+            <img src="https://via.placeholder.com/200x150?text=MCQ" alt="MCQ">
+            <a href="{% url 'AI_trainer:'|add:exercise_type %}">MCQ</a>
         </div>
         <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Presentation" alt="Presentation">
-            <a href="#">Presentation</a>
-
+            <img src="https://via.placeholder.com/200x150?text=Fill+Ups" alt="Fill Ups">
+            <a href="{% url 'AI_trainer:fillup' exercise_type %}">Fill Ups</a>
         </div>
+        
+        <br><br><br><br>
+        <h2>Practice</h2><br>
         <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Resume" alt="Resume">
-            <a href="#">Resume</a>
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Group+Discussion" alt="GD">
-            <a href="#">GD</a>
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=BMC+Pitiching" alt="BMC Pitiching">
-            <a href="#">BMC Pitiching</a>
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Networking" alt="Networking">
-            <a href="#">Networking</a>
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Outfit" alt="Outfit">
-            <a href="#">Outfit</a>
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Interview" alt="Interview">
-            <a href="#">Interview</a>
+            <img src="https://via.placeholder.com/200x150?text=Mock+Test" alt="Mock Test">
+            <a href="{% url 'AI_trainer:mock_test' exercise_type %}">Mock Test</a>
         </div>
     </div>
 </body>

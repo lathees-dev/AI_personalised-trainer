@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Trainer - Home</title>
+    <title>Self Introduction Options</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,57 +48,32 @@
             text-decoration: none;
             padding: 10px 15px;
             font-weight: bold;
-            font-size:22px;
+            font-size: 22px;
             border-radius: 5px;
             margin: 10px auto 15px;
             width: 80%;
             transition: background-color 0.3s;
+            background-color: #28a745;
         }
         .option-card a:hover {
-            background-color:rgb(105, 163, 226);
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
-    <h1>AI Trainer</h1>
+    <h1>Self Introduction Options</h1>
     <div class="options">
         <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Communication" alt="Communication">
-            <a href="{% url 'AI_trainer:communication_options' %}">Communication</a>
-
+            <img src="https://via.placeholder.com/200x150?text=Guidelines+And+Tips" alt="Guidelines And Tips">
+            <a href="{% url 'AI_trainer:self_intro_guidelines' %}">Guidelines And Tips</a>
         </div>
         <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Self+Intro" alt="Self Intro">
-            <a href="{% url 'AI_trainer:self_intro_options' %}">Self Intro</a>
+            <img src="https://via.placeholder.com/200x150?text=Enhance+Self+Intro" alt="Enhance Self Intro with AI">
+            <a href="{% url 'AI_trainer:enhance_self_intro' %}">Enhance Self Intro</a>
         </div>
         <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Presentation" alt="Presentation">
-            <a href="#">Presentation</a>
-
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Resume" alt="Resume">
-            <a href="#">Resume</a>
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Group+Discussion" alt="GD">
-            <a href="#">GD</a>
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=BMC+Pitiching" alt="BMC Pitiching">
-            <a href="#">BMC Pitiching</a>
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Networking" alt="Networking">
-            <a href="#">Networking</a>
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Outfit" alt="Outfit">
-            <a href="#">Outfit</a>
-        </div>
-        <div class="option-card">
-            <img src="https://via.placeholder.com/200x150?text=Interview" alt="Interview">
-            <a href="#">Interview</a>
+            <img src="https://via.placeholder.com/200x150?text=Build+Self+Intro" alt="Build Self Intro with AI">
+            <a href="{% url 'AI_trainer:build_self_intro' %}">Build Self Intro</a>
         </div>
     </div>
 </body>
