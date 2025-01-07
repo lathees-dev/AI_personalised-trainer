@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        textarea {
+            resize: vertical;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Resume Form</h1>
+        <form method="POST" action="{% url 'AI_trainer:save_user_info' %}">
+            {% csrf_token %}
+            <!-- User Details -->
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="personalInfo[email]" required />
+            </div>
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="personalInfo[name]" required />
+            </div>
+
+            <!-- Contact Information -->
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="text" id="phone" name="personalInfo[phone]" />
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" name="personalInfo[address]"></textarea>
+            </div>
+
+            <!-- Social Links -->
+            <div class="form-group">
+                <label for="social_links">Social Links (Comma separated)</label>
+                <input type="text" id="social_links" name="socialLinks" />
+            </div>
+
+            <!-- Professional Summary -->
+            <div class="form-group">
+                <label for="professional_summary">Professional Summary</label>
+                <textarea id="professional_summary" name="professionalSummary"></textarea>
+            </div>
+
+            <!-- Skills -->
+            <div class="form-group">
+                <label for="skills">Skills (Comma separated)</label>
+                <input type="text" id="skills" name="skills" />
+            </div>
+
+            <!-- Certifications -->
+            <div class="form-group">
+                <label for="certifications">Certifications (Comma separated)</label>
+                <input type="text" id="certifications" name="certifications" />
+            </div>
+
+            <!-- Achievements -->
+            <div class="form-group">
+                <label for="achievements">Achievements (Comma separated)</label>
+                <input type="text" id="achievements" name="achievements" />
+            </div>
+
+            <!-- Languages -->
+            <div class="form-group">
+                <label for="languages">Languages (Comma separated)</label>
+                <input type="text" id="languages" name="languages" />
+            </div>
+
+            <!-- Projects -->
+            <div class="form-group">
+                <label for="projects">Projects (Comma separated)</label>
+                <input type="text" id="projects" name="projects" />
+            </div>
+
+            <!-- Experience -->
+            <div class="form-group">
+                <label for="experience">Experience (Comma separated)</label>
+                <input type="text" id="experience" name="experience" />
+            </div>
+
+            <!-- Fresher or Professional -->
+            <div class="form-group">
+                <label for="fresher_or_professional">Fresher or Professional</label>
+                <select id="fresher_or_professional" name="fresher_or_professional">
+                    <option value="fresher">Fresher</option>
+                    <option value="professional">Professional</option>
+                </select>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit">Show Resume</button>
+        </form>
+    </div>
+
+    
+</body>
+</html>
