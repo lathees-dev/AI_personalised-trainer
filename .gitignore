@@ -1,0 +1,44 @@
+# Python-specific
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.swp
+*.swo
+
+# Virtual environments
+venv/
+env/
+ENV/
+*.env
+
+# Django-specific
+db.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+staticfiles/
+media/
+local_settings.py
+
+# Migrations
+*/migrations/*.py
+*/migrations/*.pyc
+
+# Node.js (for frontend assets, if applicable)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# macOS
+.DS_Store
+
+# IDEs/Editors
+.idea/
+.vscode/
+*.sublime-worksp
+
+videos/

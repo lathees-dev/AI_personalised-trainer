@@ -8,3 +8,10 @@ class TrainingSession(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Transcription(models.Model):
+    video_file = models.FileField(upload_to="videos/")
+    transcription_text = models.TextField(null=True, blank=True)
+    evaluation_result = models.TextField(null=True, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
