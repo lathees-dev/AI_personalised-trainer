@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.shortcuts import render
 import os
 import logging
@@ -16,9 +17,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama.llms import OllamaLLM
 
 os.environ["GOOGLE_API_KEY"] = "AIzaSyBQhTgdeffYLYsH726KgHtvtF0i1YLjQ80"
-#os.environ["GOOGLE_API_KEY"] = "AIzaSyC96ELnaWIN_3kHSzykc--ZISfgm04lVxI"
-
-# llm = OllamaLLM(model="llama3.2:1b")
 
 llm = ChatGoogleGenerativeAI(
 model="gemini-1.5-pro",
@@ -28,9 +26,33 @@ timeout=None,
 max_retries=2,
 )
 
+#model = OllamaLLM(model="llama2")
+
+def get_response_content(response):
+    """Helper function to handle different response formats from different models"""
+    if hasattr(response, 'content'):
+        return response.content.strip()
+    return str(response).strip()
+
 def home(request):
     """Renders the home page."""
     return render(request, 'AI_trainer/home.html')
+
+def self_intro_guidelines(request):
+    """Renders the self introduction guidelines page."""
+    return render(request, 'AI_trainer/self_intro_guidelines.html')
+
+def enhance_self_intro(request):
+    """Renders the enhance self introduction page."""
+    return render(request, 'AI_trainer/enhance_self_intro.html')
+
+def build_self_intro(request):
+    """Renders the build self introduction page."""
+    return render(request, 'AI_trainer/build_self_intro.html')
+
+def self_intro_options(request):
+    """Renders the self introduction options page."""
+    return render(request, 'AI_trainer/self_intro_options.html')
 
 def communication_options(request):
     """Renders the communication options page."""
@@ -218,7 +240,6 @@ def generate_question(question_type):
         return None
     
     try:
-
         prompt_template = ChatPromptTemplate.from_messages(
          [
             ("system", "You are a helpful assistant that helps in generating a question with the corresponding format."),
@@ -226,12 +247,13 @@ def generate_question(question_type):
          ]
         )
         chain = prompt_template | llm
+        #chain = prompt_template | model
         response = chain.invoke({"prompt":prompt})
         raw_response = response.content.strip()
+        #raw_response = get_response_content(response)
         print("Debugging: Raw Response Text:", raw_response)
 
         # Clean up improper quotes in the JSON
-        # Escape inner quotes
         cleaned_response = re.sub(r'#.*', '', raw_response).strip()
         cleaned_response = re.sub(r'```json', '', cleaned_response).strip()
         cleaned_response = re.sub(r'```', '', cleaned_response).strip()
@@ -507,11 +529,12 @@ def generate_fillup_question(question_type):
          ]
         )
         chain = prompt_template | llm
+        #chain = prompt_template | model
         response = chain.invoke({"prompt":prompt})
         raw_response = response.content.strip()
+        #raw_response = get_response_content(response)
         print("Debugging: Raw Fillup Response Text:", raw_response)
         # Clean up improper quotes in the JSON
-         # Clean up improper quotes in the JSON
         cleaned_response = re.sub(r'#.*', '', raw_response).strip()
         cleaned_response = re.sub(r'```json', '', cleaned_response).strip()
         cleaned_response = re.sub(r'```', '', cleaned_response).strip()
@@ -574,9 +597,9 @@ def speaking(request):
      return render(request, 'AI_trainer/speaking.html')
  
 def generate_speaking_statement(request):
-     """Generates a statement for speaking practice using Gemini."""
+     """Generates a statement for speaking practice."""
      prompt = """Act as an English teacher. Generate a simple, short, and common sentence for a student to speak for communication practice.
-     the sentence should be used to check the pronunication of the user, avoid preamble and avoid printing like this for example [student's name],[candidate's name],[user's name]"""
+     the sentence should be used to check the pronunciation of the user, avoid preamble and avoid printing like this for example [student's name],[candidate's name],[user's name]"""
      try:
         prompt_template = ChatPromptTemplate.from_messages(
             [
@@ -585,9 +608,9 @@ def generate_speaking_statement(request):
             ]
         )
         chain = prompt_template | llm
+        #chain = prompt_template | model
         response = chain.invoke({"prompt":prompt})
         statement = response.content.strip()
-          # Clean the statement 
         statement = re.sub(r'#.*', '', statement).strip()
         return JsonResponse({'statement': statement})
      except Exception as e:
