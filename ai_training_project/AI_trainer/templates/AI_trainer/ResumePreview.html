@@ -1,151 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Resume Preview</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'AI_trainer/css/ResumePreview.css' %}"> <!-- Add your CSS file here -->
-</head>
-<body>
-    <div class="resume-container">
-        <div class="resume-header">
-            <h1>{{ user_data.personal_info.name|default:"N/A" }}</h1>
-            <p>
-                {{ user_data.personal_info.email|default:"N/A" }} | 
-                {{ user_data.personal_info.phone|default:"N/A" }} | 
-                {{ user_data.personal_info.address|default:"N/A" }}
-            </p>
+    <link
+      rel="stylesheet"
+      href="{% static 'AI_trainer/css/ResumePreview.css' %}"
+    />
+  </head>
+  <body>
+    <div class="resume-preview">
+      <div class="resume-container">
+        <!-- Header Section -->
+        <div class="header">
+          <h1>{{ user_data.personalInfo.name }}</h1>
+          <div class="contact-info">
+            {% if user_data.personalInfo.email %}
+            <span>{{ user_data.personalInfo.email }}</span>
+            {% endif %} {% if user_data.personalInfo.phone %}
+            <span>{{ user_data.personalInfo.phone }}</span>
+            {% endif %} {% if user_data.personalInfo.address %}
+            <span>{{ user_data.personalInfo.address }}</span>
+            {% endif %}
+          </div>
+          {% if user_data.social_links %}
+          <div class="social-links">
+            {% if user_data.social_links.linkedIn %}
+            <a href="{{ user_data.social_links.linkedIn }}" target="_blank"></a>
+            {% endif %} {% if user_data.social_links.github %}
+            <a href="{{ user_data.social_links.github }}" target="_blank"></a>
+            {% endif %} {% if user_data.social_links.twitter %}
+            <a href="{{ user_data.social_links.twitter }}" target="_blank"></a>
+            {% endif %}
+          </div>
+          {% endif %}
         </div>
 
-        <div class="resume-section professional-summary">
-            <h2>Professional Summary</h2>
-            <p>{{ user_data.professional_summary|default:"No professional summary provided." }}</p>
+        <!-- Professional Summary -->
+        {% if user_data.professional_summary %}
+        <div class="section">
+          <h2>Professional Summary</h2>
+          <p>{{ user_data.professional_summary }}</p>
         </div>
+        {% endif %}
 
-        <div class="resume-section">
-            <h2>Education</h2>
-            <ul>
-                {% if user_data.education %}
-                    {% for edu in user_data.education %}
-                        <li class="education">
-                            <div>
-                                <span class="degree">{{ edu.degree }}</span>
-                                <div class="institution">{{ edu.institution }}</div>
-                            </div>
-                            <span class="date">{{ edu.year }}</span>
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    <li>No education details available.</li>
-                {% endif %}
-            </ul>
+        <!-- Skills Section -->
+        {% if user_data.skills %}
+        <div class="section">
+          <h2>Skills</h2>
+          <div class="skills-container">
+            {% for skill in user_data.skills %}
+            <span class="skill-tag">{{ skill }}</span>
+            {% endfor %}
+          </div>
         </div>
+        {% endif %}
 
-        <div class="resume-section">
-            <h2>Certifications</h2>
-            <ul>
-                {% if user_data.certifications %}
-                    {% for cert in user_data.certifications %}
-                        <li>
-                            {{ cert.title }}
-                            <span class="date">{{ cert.date }}</span>
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    <li>No certifications listed.</li>
-                {% endif %}
-            </ul>
+        <!-- Experience Section -->
+        {% if user_data.experience %}
+        <div class="section">
+          <h2>Work Experience</h2>
+          {% for exp in user_data.experience %}
+          <div class="experience-item">
+            <div class="experience-header">
+              <h3>{{ exp.role }}</h3>
+              <span class="duration">{{ exp.duration }}</span>
+            </div>
+            <div class="company">{{ exp.company }}</div>
+            <p class="description">{{ exp.description }}</p>
+          </div>
+          {% endfor %}
         </div>
+        {% endif %}
 
-        <div class="resume-section">
-            <h2>Achievements</h2>
-            <ul>
-                {% if user_data.achievements %}
-                    {% for achievement in user_data.achievements %}
-                        <li>
-                            {{ achievement.title }}
-                            <span class="date">{{ achievement.year }}</span>
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    <li>No achievements listed.</li>
-                {% endif %}
-            </ul>
+        <!-- Projects Section -->
+        {% if user_data.projects %}
+        <div class="section">
+          <h2>Projects</h2>
+          {% for project in user_data.projects %}
+          <div class="project-item">
+            <div class="project-header">
+              <h3>{{ project.title }}</h3>
+              <span class="duration">{{ project.duration }}</span>
+            </div>
+            <p class="description">{{ project.description }}</p>
+          </div>
+          {% endfor %}
         </div>
+        {% endif %}
 
-        <div class="resume-section">
-            <h2>Projects</h2>
-            <ul>
-                {% if user_data.projects %}
-                    {% for project in user_data.projects %}
-                        <li>
-                            <span>
-                                <strong>{{ project.title }}</strong> - {{ project.description }}
-                            </span>
-                            <span>{{ project.duration }}</span>
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    <li>No projects listed.</li>
-                {% endif %}
-            </ul>
+        <!-- Education Section -->
+        {% if user_data.education %}
+        <div class="section">
+          <h2>Education</h2>
+          {% for edu in user_data.education %}
+          <div class="education-item">
+            <div class="education-header">
+              <h3>{{ edu.degree }}</h3>
+              <span class="year">{{ edu.year }}</span>
+            </div>
+            <div class="institution">{{ edu.institution }}</div>
+          </div>
+          {% endfor %}
         </div>
+        {% endif %}
 
-        <div class="resume-section">
-            <h2>Work Experience</h2>
-            <ul>
-                {% if user_data.experience %}
-                    {% for exp in user_data.experience %}
-                        <li class="work">
-                            <div class="details">
-                                <strong>{{ exp.role }}</strong> | <span>{{ exp.company }}</span>
-                                <p class="description">{{ exp.description }}</p>
-                            </div>
-                            <span class="date">{{ exp.duration }}</span>
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    <li>No work experience listed.</li>
-                {% endif %}
-            </ul>
+        <!-- Certifications Section -->
+        {% if user_data.certifications %}
+        <div class="section">
+          <h2>Certifications</h2>
+          {% for cert in user_data.certifications %}
+          <div class="certification-item">
+            <span>{{ cert.title }}</span>
+            <span class="date">{{ cert.date }}</span>
+          </div>
+          {% endfor %}
         </div>
+        {% endif %}
 
-        <div class="resume-section">
-            <h2>Skills</h2>
-            <p class="skills-list">
-                {% if user_data.skills %}
-                    {{ user_data.skills|join:", " }}
-                {% else %}
-                    No skills listed.
-                {% endif %}
-            </p>
+        <!-- Languages Section -->
+        {% if user_data.languages %}
+        <div class="section">
+          <h2>Languages</h2>
+          <div class="languages-container">
+            {% for lang in user_data.languages %}
+            <div class="language-item">
+              <span>{{ lang.language }}</span>
+              <span class="proficiency">{{ lang.proficiency }}</span>
+            </div>
+            {% endfor %}
+          </div>
         </div>
+        {% endif %}
+      </div>
 
-        <div class="button-container">
-            <button class="download-btn" id="download-btn">
-                Download PDF
-            </button>
-        </div>
+      <div class="button-container">
+        <button class="download-btn" id="download-btn">Download PDF</button>
+      </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
     <script>
-        document.getElementById('download-btn').addEventListener('click', function () {
-            var element = document.querySelector('.resume-container');
-            var options = {
-                margin: [1, 1, 15, 1], // Increased bottom margin
-                filename: 'ATS_Resume.pdf',
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 3, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            };
-
-            html2pdf()
-                .set(options)
-                .from(element)
-                .save();
-        });
+      document.getElementById("download-btn").addEventListener("click", function () {
+    var element = document.querySelector(".resume-container");
+    var opt = {
+        margin: 15,
+        filename: "resume.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { 
+            scale: 2,
+            letterRendering: true,
+            useCORS: true,
+            logging: true
+        },
+        jsPDF: { 
+            unit: "mm", 
+            format: "a4", 
+            orientation: "portrait",
+            compress: true
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+    html2pdf().set(opt).from(element).save();
+});
     </script>
-</body>
+  </body>
 </html>
