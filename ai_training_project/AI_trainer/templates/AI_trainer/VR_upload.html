@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Video Resume</title>
+    <style>
+        /* General reset and styling */
+        body {
+            margin: 0;
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container styling */
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        /* Title */
+        h1 {
+            font-size: 26px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Error message styling */
+        p {
+            color: #d9534f;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        /* Form labels */
+        label {
+            display: block;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        /* Input fields */
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        /* File input hover effect */
+        input[type="file"]:hover {
+            border-color: #6a11cb;
+        }
+
+        /* Submit button */
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+        }
+
+        /* Footer note */
+        .footer {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Your Video Resume</h1>
+        {% if error %}
+            <p>{{ error }}</p>
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="video_resume">Video Resume:</label>
+            <input type="file" name="video_resume" id="video_resume" accept="video/*" required>
+
+            <button type="submit">Upload</button>
+        </form>
+        <div class="footer">
+            Accepted formats: MP4, AVI, MOV | Max file size: 100MB
+        </div>
+    </div>
+</body>
+</html>
