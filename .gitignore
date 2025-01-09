@@ -2,7 +2,11 @@
 *.pyc
 *.pyo
 *.pyd
+
+__pycache__/
+
 _pycache_/
+
 *.swp
 *.swo
 
@@ -24,6 +28,9 @@ media/
 local_settings.py
 
 # Migrations
+*/migrations/*.py
+*/migrations/*.pyc
+
 /migrations/.py
 /migrations/.pyc
 

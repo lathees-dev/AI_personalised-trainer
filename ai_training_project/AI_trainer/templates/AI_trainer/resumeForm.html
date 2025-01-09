@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Form</title>
+    {% load static %}
+    <link
+      rel="stylesheet"
+      href="{% static 'AI_trainer/css/resumeForm.css' %}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Resume Form</h1>
+      <form
+        method="POST"
+        action="{% url 'AI_trainer:save_user_info' %}"
+        id="resumeForm"
+      >
+        {% csrf_token %}
+
+        <!-- Personal Information -->
+        <div class="form-group">
+          <h3>Personal Information</h3>
+          <input
+            type="email"
+            name="personalInfo.email"
+            required
+            placeholder="Email"
+          />
+          <input
+            type="text"
+            name="personalInfo.name"
+            required
+            placeholder="Full Name"
+          />
+          <input
+            type="tel"
+            name="personalInfo.phone"
+            required
+            placeholder="Phone"
+          />
+          <textarea
+            name="personalInfo.address"
+            placeholder="Address"
+          ></textarea>
+        </div>
+
+        <!-- Social Links -->
+        <div class="form-group">
+          <h3>Social Links</h3>
+          <input
+            type="url"
+            name="socialLinks.linkedIn"
+            placeholder="LinkedIn URL"
+          />
+          <input
+            type="url"
+            name="socialLinks.github"
+            placeholder="GitHub URL"
+          />
+          <input
+            type="url"
+            name="socialLinks.twitter"
+            placeholder="Twitter URL"
+          />
+        </div>
+
+        <!-- Education (Dynamic Fields) -->
+        <div class="form-group" id="educationContainer">
+          <h3>Education (Max 2)</h3>
+          <div class="education-entry">
+            <input
+              type="text"
+              name="education[0].degree"
+              placeholder="Degree"
+            />
+            <input
+              type="text"
+              name="education[0].institution"
+              placeholder="Institution"
+            />
+            <input type="text" name="education[0].year" placeholder="Year" />
+            <button
+              type="button"
+              class="add-btn"
+              onclick="addField('education', 2)"
+            >
+              Add Education
+            </button>
+          </div>
+        </div>
+
+        <!-- Experience (Dynamic Fields) -->
+        <div class="form-group" id="experienceContainer">
+          <h3>Work Experience (Max 3)</h3>
+          <div class="experience-entry">
+            <input type="text" name="experience[0].role" placeholder="Role" />
+            <input
+              type="text"
+              name="experience[0].company"
+              placeholder="Company"
+            />
+            <input
+              type="text"
+              name="experience[0].duration"
+              placeholder="Duration"
+            />
+            <textarea
+              name="experience[0].description"
+              placeholder="Description (Max 25 words)"
+            ></textarea>
+            <button
+              type="button"
+              class="add-btn"
+              onclick="addField('experience', 3)"
+            >
+              Add Experience
+            </button>
+          </div>
+        </div>
+
+        <!-- Projects Section -->
+        <div class="form-group" id="projectContainer">
+          <h3>Projects (Max 3)</h3>
+          <div class="project-entry">
+            <input
+              type="text"
+              name="projects[0].title"
+              placeholder="Project Title"
+            />
+            <input
+              type="text"
+              name="projects[0].description"
+              placeholder="Project Description"
+            />
+            <input
+              type="text"
+              name="projects[0].duration"
+              placeholder="Duration (eg. Jan 2021 - Mar 2021)"
+            />
+            <button type="button" class="add-btn" onclick="addField('project', 3)">
+              Add Project
+            </button>
+          </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="form-group">
+          <h3>Skills</h3>
+          <select
+            multiple
+            name="skills"
+            id="skillsSelect"
+            class="skills-select"
+          >
+            <option value="Python">Python</option>
+            <option value="JavaScript">JavaScript</option>
+            <option value="React">React</option>
+            <option value="Node.js">Node.js</option>
+            <option value="Django">Django</option>
+            <option value="HTML">HTML</option>
+            <option value="CSS">CSS</option>
+            <option value="SQL">SQL</option>
+            <option value="Git">Git</option>
+            <option value="Docker">Docker</option>
+            <!-- Add more skills as needed -->
+          </select>
+          <small
+            >Hold Ctrl (Windows) or Cmd (Mac) to select multiple skills</small
+          >
+        </div>
+
+        <!-- Add Professional Summary -->
+        <div class="form-group">
+          <h3>Professional Summary</h3>
+          <textarea
+            name="professionalSummary"
+            placeholder="Write a brief summary (Max 35 words)"
+            maxlength="500"
+          ></textarea>
+        </div>
+
+        <!-- Languages Section -->
+        <div class="form-group" id="languageContainer">
+          <h3>Communication Languages (Max 3)</h3>
+          <div class="language-entry">
+            <input
+              type="text"
+              name="languages[0].language"
+              placeholder="Language (e.g., English, Spanish)"
+            />
+            <select name="languages[0].proficiency">
+              <option value="Basic">Basic</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+              <option value="Native">Native</option>
+            </select>
+            <button type="button" class="add-btn" onclick="addField('language', 3)">
+              Add Language
+            </button>
+          </div>
+        </div>
+
+        <!-- Certifications Section -->
+        <div class="form-group" id="certificationContainer">
+          <h3>Certifications (Max 3)</h3>
+          <div class="certification-entry">
+            <input
+              type="text"
+              name="certifications[0].title"
+              placeholder="Certification Title"
+            />
+            <input
+              type="text"
+              name="certifications[0].date"
+              placeholder="Date (eg. Jan 2021)"
+            />
+            <button type="button" class="add-btn" onclick="addField('certification', 3)">
+              Add Certification
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit">Show Resume</button>
+      </form>
+    </div>
+
+    <script>
+      const MAX_EDUCATION = 2;
+      const MAX_EXPERIENCE = 3;
+      const MAX_LANGUAGES = 3;
+      const MAX_CERTIFICATIONS = 3;
+      const MAX_PROJECTS = 3;
+
+      function createNewField(type, index) {
+        switch (type) {
+          case "education":
+            return `
+                        <div class="education-entry">
+                            <input type="text" name="education[${index}].degree" placeholder="Degree" />
+                            <input type="text" name="education[${index}].institution" placeholder="Institution" />
+                            <input type="text" name="education[${index}].year" placeholder="Year" />
+                            <button type="button" class="remove-btn" onclick="removeField(this, 'education')">Remove</button>
+                        </div>
+                    `;
+          case "experience":
+            return `
+                        <div class="experience-entry">
+                            <input type="text" name="experience[${index}].role" placeholder="Role" />
+                            <input type="text" name="experience[${index}].company" placeholder="Company" />
+                            <input type="text" name="experience[${index}].duration" placeholder="Duration" />
+                            <textarea name="experience[${index}].description" placeholder="Description (Max 25 words)"></textarea>
+                            <button type="button" class="remove-btn" onclick="removeField(this, 'experience')">Remove</button>
+                        </div>
+                    `;
+          case "project":
+            return `
+                    <div class="project-entry">
+                        <input type="text" name="projects[${index}].title" placeholder="Project Title" />
+                        <input type="text" name="projects[${index}].description" placeholder="Project Description" />
+                        <input type="text" name="projects[${index}].duration" placeholder="Duration" />
+                        <button type="button" class="remove-btn" onclick="removeField(this, 'project')">Remove</button>
+                    </div>
+                `;
+          case "language":
+            return `
+                    <div class="language-entry">
+                        <input type="text" name="languages[${index}].language" placeholder="Language (e.g., English, Spanish)" />
+                        <select name="languages[${index}].proficiency">
+                            <option value="Basic">Basic</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                            <option value="Native">Native</option>
+                        </select>
+                        <button type="button" class="remove-btn" onclick="removeField(this, 'language')">Remove</button>
+                    </div>
+                `;
+          case "certification":
+            return `
+                    <div class="certification-entry">
+                        <input type="text" name="certifications[${index}].title" placeholder="Certification Title" />
+                        <input type="text" name="certifications[${index}].date" placeholder="Date (eg. Jan 2021)" />
+                        <button type="button" class="remove-btn" onclick="removeField(this, 'certification')">Remove</button>
+                    </div>
+                `;
+        }
+      }
+
+      
+      function addField(type, maxEntries) {
+        const container = document.getElementById(`${type}Container`);
+        const entries = container.getElementsByClassName(`${type}-entry`);
+
+        if (entries.length >= maxEntries) {
+          alert(`You can only add up to ${maxEntries} ${type} entries.`);
+          return;
+        }
+
+        const newEntry = createNewField(type, entries.length);
+
+        // Insert before the button div for languages, projects, and certifications
+        if (
+          type === "language" ||
+          type === "project" ||
+          type === "certification"
+        ) {
+          const buttonDiv = container.querySelector(
+            'div[style="margin-top: 10px"]'
+          );
+          container.insertBefore(
+            document.createRange().createContextualFragment(newEntry),
+            buttonDiv
+          );
+        } else {
+          container.insertAdjacentHTML("beforeend", newEntry);
+        }
+      }
+
+      function removeField(button, type) {
+        const entry = button.closest(`.${type}-entry`);
+        if (entry) {
+          entry.remove();
+          // Reindex remaining fields
+          const container = document.getElementById(`${type}Container`);
+          const entries = container.getElementsByClassName(`${type}-entry`);
+          Array.from(entries).forEach((entry, index) => {
+            entry.querySelectorAll("input, select").forEach((input) => {
+              const name = input.getAttribute("name");
+              if (name) {
+                input.setAttribute(
+                  "name",
+                  name.replace(/\[\d+\]/, `[${index}]`)
+                );
+              }
+            });
+          });
+        }
+      }
+
+      function validateForm() {
+        const form = document.getElementById("resumeForm");
+        const requiredFields = form.querySelectorAll("[required]");
+        let isValid = true;
+
+        requiredFields.forEach((field) => {
+          if (!field.value.trim()) {
+            field.classList.add("invalid");
+            isValid = false;
+          } else {
+            field.classList.remove("invalid");
+          }
+        });
+
+        // Validate word limits
+        const professionalSummary = form.querySelector(
+          '[name="professionalSummary"]'
+        );
+        if (professionalSummary.value.split(" ").length > 35) {
+          alert("Professional Summary cannot exceed 35 words");
+          isValid = false;
+        }
+
+        return isValid;
+      }
+
+      document.getElementById("resumeForm").onsubmit = function (e) {
+        if (!validateForm()) {
+          e.preventDefault();
+        }
+      };
+    </script>
+  </body>
+</html>

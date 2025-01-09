@@ -1,0 +1,142 @@
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.add-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  background: #0056b3;
+}
+
+/* Add more styles to match the React version */
+
+/* Add validation styles */
+.invalid {
+  border-color: #dc3545 !important;
+}
+
+.invalid:focus {
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+/* Dynamic field styles */
+.remove-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 0.5rem;
+}
+
+.remove-btn:hover {
+  background-color: #c82333;
+}
+
+/* Multiple select styling */
+select[multiple] {
+  height: 150px;
+  padding: 0.5rem;
+}
+
+option {
+  padding: 0.25rem 0.5rem;
+}
+
+option:checked {
+  background-color: #007bff;
+  color: white;
+}
+
+.language-entry,
+.certification-entry {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.remove-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.remove-btn:hover {
+  background-color: #c82333;
+}
+
+.add-btn {
+  margin-top: 10px;
+}
+
+.skills-select {
+  width: 100%;
+  min-height: 150px;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.skills-select option {
+  padding: 8px;
+}
+
+.skills-select option:checked {
+  background-color: #007bff linear-gradient(0deg, #007bff 0%, #007bff 100%);
+  color: white;
+}
+
+.project-entry {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.project-entry input {
+  margin-bottom: 10px;
+}
+
+small {
+  color: #666;
+  display: block;
+  margin-top: 5px;
+}
