@@ -486,6 +486,7 @@ def resume_analyzer_page(request):
     return render(request, "AI_trainer/resume_analyzer.html", {"form": form})
 
 
+
 def display_analysis(request, analysis_id):
     try:
         analysis = ResumeAnalysis.objects.get(id=analysis_id)
