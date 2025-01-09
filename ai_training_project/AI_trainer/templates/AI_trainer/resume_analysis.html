@@ -61,7 +61,14 @@
               <div
                 class="detail-panel"
                 id="{{ section.id }}-panel"
-                {% if not forloop.first %}style="display: none;"{% endif %}
+                {%
+                if
+                not
+                forloop.first
+                %}style="display: none;"
+                {%
+                endif
+                %}
               >
                 <h2>{{ section.title }}</h2>
 
@@ -86,7 +93,9 @@
 
                   <div class="feedback-section">
                     <h3>Feedback</h3>
-                    <p class="overview">{{ section.details.feedback.overview }}</p>
+                    <p class="overview">
+                      {{ section.details.feedback.overview }}
+                    </p>
                     <p class="recommendations">
                       {{ section.details.feedback.recommendations }}
                     </p>
