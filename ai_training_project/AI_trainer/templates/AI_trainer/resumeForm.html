@@ -122,7 +122,7 @@
         </div>
 
         <!-- Projects Section -->
-        <div class="form-group" id="projectsContainer">
+        <div class="form-group" id="projectContainer">
           <h3>Projects (Max 3)</h3>
           <div class="project-entry">
             <input
@@ -140,13 +140,7 @@
               name="projects[0].duration"
               placeholder="Duration (eg. Jan 2021 - Mar 2021)"
             />
-          </div>
-          <div style="margin-top: 10px">
-            <button
-              type="button"
-              class="add-btn"
-              onclick="addField('project', MAX_PROJECTS)"
-            >
+            <button type="button" class="add-btn" onclick="addField('project', 3)">
               Add Project
             </button>
           </div>
@@ -189,13 +183,13 @@
         </div>
 
         <!-- Languages Section -->
-        <div class="form-group" id="languagesContainer">
-          <h3>Languages (Max 3)</h3>
+        <div class="form-group" id="languageContainer">
+          <h3>Communication Languages (Max 3)</h3>
           <div class="language-entry">
             <input
               type="text"
               name="languages[0].language"
-              placeholder="Language"
+              placeholder="Language (e.g., English, Spanish)"
             />
             <select name="languages[0].proficiency">
               <option value="Basic">Basic</option>
@@ -203,20 +197,14 @@
               <option value="Advanced">Advanced</option>
               <option value="Native">Native</option>
             </select>
-          </div>
-          <div style="margin-top: 10px">
-            <button
-              type="button"
-              class="add-btn"
-              onclick="addField('language', MAX_LANGUAGES)"
-            >
+            <button type="button" class="add-btn" onclick="addField('language', 3)">
               Add Language
             </button>
           </div>
         </div>
 
         <!-- Certifications Section -->
-        <div class="form-group" id="certificationsContainer">
+        <div class="form-group" id="certificationContainer">
           <h3>Certifications (Max 3)</h3>
           <div class="certification-entry">
             <input
@@ -229,13 +217,7 @@
               name="certifications[0].date"
               placeholder="Date (eg. Jan 2021)"
             />
-          </div>
-          <div style="margin-top: 10px">
-            <button
-              type="button"
-              class="add-btn"
-              onclick="addField('certification', MAX_CERTIFICATIONS)"
-            >
+            <button type="button" class="add-btn" onclick="addField('certification', 3)">
               Add Certification
             </button>
           </div>
@@ -251,6 +233,7 @@
       const MAX_EXPERIENCE = 3;
       const MAX_LANGUAGES = 3;
       const MAX_CERTIFICATIONS = 3;
+      const MAX_PROJECTS = 3;
 
       function createNewField(type, index) {
         switch (type) {
@@ -275,17 +258,17 @@
                     `;
           case "project":
             return `
-        <div class="project-entry">
-            <input type="text" name="projects[${index}].title" placeholder="Project Title" />
-            <input type="text" name="projects[${index}].description" placeholder="Project Description" />
-            <input type="text" name="projects[${index}].duration" placeholder="Duration" />
-            <button type="button" class="remove-btn" onclick="removeField(this, 'project')">Remove</button>
-        </div>
-    `;
+                    <div class="project-entry">
+                        <input type="text" name="projects[${index}].title" placeholder="Project Title" />
+                        <input type="text" name="projects[${index}].description" placeholder="Project Description" />
+                        <input type="text" name="projects[${index}].duration" placeholder="Duration" />
+                        <button type="button" class="remove-btn" onclick="removeField(this, 'project')">Remove</button>
+                    </div>
+                `;
           case "language":
             return `
                     <div class="language-entry">
-                        <input type="text" name="languages[${index}].language" placeholder="Language" />
+                        <input type="text" name="languages[${index}].language" placeholder="Language (e.g., English, Spanish)" />
                         <select name="languages[${index}].proficiency">
                             <option value="Basic">Basic</option>
                             <option value="Intermediate">Intermediate</option>
@@ -317,8 +300,12 @@
 
         const newEntry = createNewField(type, entries.length);
 
-        // Insert before the button div for languages and certifications
-        if (type === "language" || type === "certification") {
+        // Insert before the button div for languages, projects, and certifications
+        if (
+          type === "language" ||
+          type === "project" ||
+          type === "certification"
+        ) {
           const buttonDiv = container.querySelector(
             'div[style="margin-top: 10px"]'
           );

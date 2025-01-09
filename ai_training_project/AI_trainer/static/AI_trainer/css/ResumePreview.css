@@ -10,15 +10,14 @@
 
 .resume-container {
   background: white;
-  padding: 1.5rem;
+  padding: 1.5rem 2.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  margin-bottom: 2rem;
-  min-height: 29.7cm;
-  max-height: 29.7cm;
-  width: 21cm;
+  width: 210mm;
+  min-height: 297mm;
   margin: 0 auto;
-  overflow: auto;
+  overflow: visible;
+  position: relative;
 }
 
 /* Header Section */
@@ -276,7 +275,7 @@
 @media print {
   @page {
     size: A4;
-    margin: 15mm;
+    margin: 12mm 15mm;
   }
 
   .resume-preview {
@@ -284,13 +283,11 @@
     padding: 0;
     margin: 0;
     width: 100%;
-    height: 100%;
   }
 
   .resume-container {
-    width: 100%;
-    height: 100%;
-    padding: 0;
+    width: 100% !important;
+    padding: 0 20mm;
     margin: 0;
     box-shadow: none;
     overflow: visible;
@@ -298,7 +295,26 @@
     -webkit-print-color-adjust: exact;
   }
 
-  /* Ensure all content is visible */
+  /* Ensure right-aligned content is visible */
+  .experience-header,
+  .project-header,
+  .education-header,
+  .certification-item {
+    width: calc(100% - 20px);
+    padding-right: 15px;
+    break-inside: avoid;
+    position: relative;
+  }
+
+  .duration,
+  .year,
+  .date {
+    position: absolute;
+    right: 0;
+    margin-right: 15px;
+  }
+
+  /* Prevent content from being cut off */
   * {
     overflow: visible !important;
   }
