@@ -392,6 +392,7 @@ def resume_preview(request):
         )
 
 from pyexpat import model
+
 from django.shortcuts import render
 import os
 import logging
@@ -399,7 +400,6 @@ import json
 import google.generativeai as genai
 from django.shortcuts import render
 from django.http import JsonResponse
-import json
 import re
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -412,11 +412,11 @@ from langchain_ollama.llms import OllamaLLM
 os.environ["GOOGLE_API_KEY"] = "AIzaSyBQhTgdeffYLYsH726KgHtvtF0i1YLjQ80"
 
 llm = ChatGoogleGenerativeAI(
-model="gemini-1.5-pro",
-temperature=0,
-max_tokens=None,
-timeout=None,
-max_retries=2,
+    model="gemini-1.5-pro",
+    temperature=0,
+    max_tokens=None,
+    timeout=None,
+    max_retries=2,
 )
 
 #model = OllamaLLM(model="llama2")
@@ -439,9 +439,88 @@ def enhance_self_intro(request):
     """Renders the enhance self introduction page."""
     return render(request, 'AI_trainer/enhance_self_intro.html')
 
+def self_enhance_script(script):
+    try:
+        prompt = (
+            "Transform the following script into a captivating story with vivid descriptions, "
+            "engaging narrative, and a clear story arc. Ensure the grammar is perfect, "
+            "the phrasing is professional, and relevant keywords are included:\n"
+            " sound as human as possible"
+            f"{script}"
+        )
+        prompt_template = ChatPromptTemplate.from_messages([
+            ("system", "You are a helpful assistant that helps in enhancing self-introduction scripts."),
+            ("human", "{prompt}"),
+        ])
+        chain = prompt_template | llm
+        response = chain.invoke({"prompt": prompt})
+        return get_response_content(response)
+    except Exception as e:
+        return f"Error in enhancing script: {str(e)}"
+
+def build_self_intro_ai(user_input):
+    try:
+        prompt = (
+            "Create a captivating self-introduction in a storytelling format, sound as human as possible using the following details. "
+            "Ensure the narrative is engaging, with vivid descriptions and a clear story arc:\n"
+            f"Name: {user_input.get('name', 'a motivated individual')}\n"
+            f"Place: {user_input.get('place', 'an inspiring location')}\n"
+            f"College: {user_input.get('college', 'a reputable institution')}\n"
+            f"Stream: {user_input.get('stream', 'a specific field')}\n"
+            f"Area of Interest: {user_input.get('area_of_interest', 'a fascinating domain')}\n"
+            f"Skill Set: {user_input.get('skill_set', 'varied and valuable skills')}\n"
+            f"Achievements: {user_input.get('achievements', 'notable accomplishments')}\n"
+            f"Experience: {user_input.get('experience', 'some professional experience')}\n"
+            f"Project Description: {user_input.get('project_desc', 'important projects')}\n"
+            f"Short-Term Goal: {user_input.get('short_term_goal', 'a clear short-term goal')}\n"
+            f"Long-Term Goal: {user_input.get('long_term_goal', 'an ambitious long-term vision')}\n"
+        )
+        prompt_template = ChatPromptTemplate.from_messages([
+            ("system", "You are a helpful assistant that helps in creating self-introductions."),
+            ("human", "{prompt}"),
+        ])
+        chain = prompt_template | llm
+        response = chain.invoke({"prompt": prompt})
+        return get_response_content(response)
+    except Exception as e:
+        return f"Error in building self-intro: {str(e)}"
+
 def build_self_intro(request):
     """Renders the build self introduction page."""
     return render(request, 'AI_trainer/build_self_intro.html')
+
+def self_intro(request):
+    # Handle AI-based self-introduction creation
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            action = data.get('action')
+
+            if action == 'build_with_ai':
+                user_input = data.get('user_input', {})
+                response = build_self_intro_ai(user_input)
+                return JsonResponse({"success": True, "output": response})
+
+            elif action == 'enhance_script':
+                script = data.get('script', '')
+                response = self_enhance_script(script)
+                return JsonResponse({"success": True, "output": response})
+
+            else:
+                return JsonResponse({"success": False, "error": "Invalid action specified."}, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "error": "Invalid JSON payload."}, status=400)
+    else:
+        return JsonResponse({"success": False, "error": "Invalid request method."}, status=405)
+
+def enhance_script_page(request):
+    """Renders the enhance script page."""
+    return render(request, 'AI_trainer/self_enhance_script.html')
+
+def build_with_ai_page(request):
+    """Renders the build with AI page."""
+    return render(request, 'AI_trainer/self_build_with_ai.html')
 
 def self_intro_options(request):
     """Renders the self introduction options page."""

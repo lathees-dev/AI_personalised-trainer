@@ -16,18 +16,20 @@ urlpatterns = [
         views.fetch_latest_user_info,
         name="resume_preview",
     ),
-]
     path("home/", views.home, name="home"), 
     path("self-intro-options/", views.self_intro_options, name="self_intro_options"),
     path("self-intro-guidelines/", views.self_intro_guidelines, name="self_intro_guidelines"),
     path("enhance-self-intro/", views.enhance_self_intro, name="enhance_self_intro"),
     path("build-self-intro/", views.build_self_intro, name="build_self_intro"),
+    path('self-intro/', views.self_intro, name='self_intro'),
+    path('enhance-script/', views.enhance_script_page, name='enhance_script_page'),
+    path('build-with-ai/', views.build_with_ai_page, name='build_with_ai_page'),
     path("communication_options/", views.communication_options, name="communication_options"),
     path("grammar-options/", views.grammar_options, name="grammar_options"),  
     path("vocab-options/", views.vocab_options, name="vocab_options"), 
     path("vocab_learn/", views.vocab_learn, name="vocab_learn"),  
     path("vocabulary/", views.vocabulary, name="vocabulary"),  
-    path("exercise-options/<str:exercise_type>/",views.exercise_options,name="exercise_options",),
+    path("exercise-options/<str:exercise_type>/", views.exercise_options, name="exercise_options"),
     path("preposition/", views.preposition, name="preposition"),  
     path("articles/", views.articles, name="articles"),
     path("sentence_formation/", views.sentence_formation, name="sentence_formation"),
@@ -36,7 +38,7 @@ urlpatterns = [
     path("learn/<str:exercise_type>/", views.learn_exercise, name="learn_exercise"),
     path("fillup/<str:question_type>/", views.fillup, name="fillup"),
     path("speaking/", views.speaking, name="speaking"),
-    path("generate_speaking_statement/",views.generate_speaking_statement,name="generate_speaking_statement",),
+    path("generate_speaking_statement/", views.generate_speaking_statement, name="generate_speaking_statement"),
     path("conjunctions/", views.conjunctions, name="conjunctions"),
     path("interjections/", views.interjections, name="interjections"),
     path("nouns/", views.nouns, name="nouns"),
@@ -48,5 +50,5 @@ urlpatterns = [
     path('mock_test_submit/<str:exercise_type>/', views.handle_mock_test_submit, name='mock_test_submit'),
     path('mixed_mock_test/', views.mixed_mock_test, name='mixed_mock_test'),
     path('mixed_mock_test_submit/', views.handle_mixed_mock_test_submit, name='mixed_mock_test_submit'),
-]
-
+    
+    ]

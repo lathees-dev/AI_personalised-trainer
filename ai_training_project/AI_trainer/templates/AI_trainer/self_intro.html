@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self Introduction Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Self Introduction Generator</h1>
+    </header>
+    <main>
+        <div class="section" id="build_with_ai_section">
+            <h2>Build with AI</h2>
+            <p>Click the button below to generate a self-introduction using AI.</p>
+            <a href="{% url 'AI_trainer:build_with_ai_page' %}">
+                <button>Build Self-Intro with AI</button>
+            </a>
+        </div>
+        <hr>
+        <div class="section" id="enhance_script_section">
+            <h2>Enhance Script</h2>
+            <p>Click the button below to enhance an existing script.</p>
+            <a href="{% url 'AI_trainer:enhance_script_page' %}">
+                <button>Enhance Script</button>
+            </a>
+        </div>
+    </main>
+</body>
+</html>
