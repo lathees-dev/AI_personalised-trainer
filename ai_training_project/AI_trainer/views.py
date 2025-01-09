@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from .models import Transcription
 from .models import UserInfo
 import google.generativeai as genai
@@ -10,6 +11,12 @@ import ffmpeg
 import whisper
 import json
 import logging
+from django.conf import settings
+import PyPDF2
+import io
+from .utils import parse_pdf_resume, analyze_resume
+from .forms import ResumeAnalysisForm
+from .models import ResumeAnalysis
 
 logger = logging.getLogger(__name__)
 
@@ -389,3 +396,296 @@ def resume_preview(request):
             "AI_trainer/ResumePreview.html",
             {"loading": False, "error": str(e), "user_data": None},
         )
+
+
+def parse_pdf_resume(pdf_file):
+    pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_file.read()))
+    text = ""
+    for page in pdf_reader.pages:
+        text += page.extract_text()
+    return text
+
+
+def analyze_resume(resume_text, job_description, api_key):
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-1.5-pro")
+
+    prompt = f"""
+    Analyze this resume against the job description and provide detailed feedback:
+
+    Resume:
+    {resume_text}
+
+    Job Description:
+    {job_description}
+
+    Please provide analysis in the following format:
+    1. Match Score (0-100)
+    2. Key Strengths
+    3. Missing Skills/Requirements
+    4. Recommendations for Improvement
+    5. Overall Assessment
+
+    Be specific and actionable in your feedback.
+    """
+
+    response = model.generate_content(prompt)
+    return response.text
+
+
+@csrf_exempt
+def analyze_resume_view(request):
+    if request.method == "GET":
+        return render(
+            request, "AI_trainer/resume_analyzer.html", {"form": ResumeAnalysisForm()}
+        )
+
+    elif request.method == "POST":
+        form = ResumeAnalysisForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                analysis = form.save(commit=False)
+                resume_text = parse_pdf_resume(request.FILES["resume_file"])
+                api_key = "AIzaSyDB5eH-ldf8haalnbOVoDAdYqZnb_IBpRk"
+                analysis_result = analyze_resume(
+                    resume_text, form.cleaned_data["job_description"], api_key
+                )
+                
+                # Debug logging
+                logger.debug(f"Analysis Result Type: {type(analysis_result)}")
+                logger.debug(f"Analysis Result: {analysis_result}")
+                
+                # Ensure analysis_result is a dictionary before converting to JSON
+                if not isinstance(analysis_result, dict):
+                    raise ValueError("Analysis result is not a dictionary")
+                
+                # Store the analysis result as a JSON string
+                analysis.analysis_result = json.dumps(analysis_result)
+                analysis.save()
+                
+                logger.debug(f"Saved Analysis ID: {analysis.id}")
+
+                # For AJAX requests, return JSON
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse({"success": True, "analysis": analysis_result})
+
+                # For regular form submissions, redirect to analysis page
+                return redirect("AI_trainer:display_analysis", analysis_id=analysis.id)
+
+            except Exception as e:
+                logger.error(f"Error in analyze_resume_view: {str(e)}")
+                return JsonResponse({"error": str(e)}, status=500)
+        else:
+            return JsonResponse({"error": "Invalid form data"}, status=400)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
+def resume_analyzer_page(request):
+    form = ResumeAnalysisForm()
+    return render(request, "AI_trainer/resume_analyzer.html", {"form": form})
+
+
+def display_analysis(request, analysis_id):
+    try:
+        analysis = ResumeAnalysis.objects.get(id=analysis_id)
+        
+        # Debug logging
+        logger.debug(f"Analysis Result Raw: {analysis.analysis_result}")
+        
+        try:
+            # Convert the stored JSON string to a dictionary
+            analysis_data = json.loads(analysis.analysis_result)
+            
+            # Validate required fields
+            required_fields = [
+                "ats_parse_rate", "contact_information", "skills_analysis",
+                "description_quality", "experience_analysis", "education_analysis",
+                "projects_analysis"
+            ]
+            
+            for field in required_fields:
+                if field not in analysis_data:
+                    raise ValueError(f"Missing required field: {field}")
+            
+            # Debug logging
+            logger.debug(f"Analysis Data: {analysis_data}")
+            
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON Decode Error: {str(e)}")
+            return HttpResponse(f"Invalid analysis data format: {str(e)}", status=500)
+        except ValueError as e:
+            logger.error(f"Validation Error: {str(e)}")
+            return HttpResponse(f"Invalid analysis data structure: {str(e)}", status=500)
+        
+        # Transform analysis data into sections format
+        sections = [
+            {
+                "id": "ats",
+                "title": "ATS Compatibility",
+                "icon_html": '<i class="fas fa-robot"></i>',
+                "score": analysis_data["ats_parse_rate"]["score"],
+                "details": {
+                    "strengthsHeading": "ATS Strengths",
+                    "improvementsHeading": "ATS Improvements",
+                    "strengths": analysis_data["ats_parse_rate"]["pass"]["passed"],
+                    "improvements": analysis_data["ats_parse_rate"]["pass"]["improve"],
+                    "feedback": {
+                        "overview": analysis_data["ats_parse_rate"]["reason"],
+                        "recommendations": analysis_data["ats_parse_rate"][
+                            "recommendations"
+                        ],
+                        "impact": "ATS compatibility affects your resume's visibility",
+                    },
+                },
+            },
+            {
+                "id": "contact",
+                "title": "Contact Information",
+                "icon_html": '<i class="fas fa-address-card"></i>',
+                "score": analysis_data["contact_information"]["contact_links"]["score"],
+                "details": {
+                    "strengthsHeading": "Available Links",
+                    "improvementsHeading": "Recommended Links",
+                    "strengths": analysis_data["contact_information"]["contact_links"][
+                        "social_links"
+                    ],
+                    "improvements": analysis_data["contact_information"][
+                        "contact_links"
+                    ]["recommended"],
+                    "feedback": {
+                        "overview": analysis_data["contact_information"]["reason"],
+                        "recommendations": "Ensure professional contact details are clear",
+                        "impact": "Professional networking enhances visibility",
+                    },
+                },
+            },
+            {
+                "id": "skills",
+                "title": "Skills Analysis",
+                "icon_html": '<i class="fas fa-code"></i>',
+                "score": analysis_data["skills_analysis"]["hard_skills"]["score"],
+                "details": {
+                    "strengthsHeading": "Matched Skills",
+                    "improvementsHeading": "Missing Skills",
+                    "strengths": analysis_data["skills_analysis"]["hard_skills"][
+                        "matched"
+                    ],
+                    "improvements": analysis_data["skills_analysis"]["hard_skills"][
+                        "not_suited"
+                    ],
+                    "feedback": {
+                        "overview": analysis_data["skills_analysis"]["reason"],
+                        "recommendations": analysis_data["skills_analysis"][
+                            "recommendations"
+                        ],
+                        "impact": "Skills match is crucial for job fit",
+                    },
+                },
+            },
+            {
+                "id": "description",
+                "title": "Description Quality",
+                "icon_html": '<i class="fas fa-file-alt"></i>',
+                "score": analysis_data["description_quality"]["score"],
+                "details": {
+                    "strengthsHeading": "Content Strengths",
+                    "improvementsHeading": "Areas to Improve",
+                    "strengths": analysis_data["description_quality"]["feedback"][
+                        "strength"
+                    ],
+                    "improvements": analysis_data["description_quality"]["feedback"][
+                        "suggestions"
+                    ],
+                    "feedback": {
+                        "overview": analysis_data["description_quality"]["reason"],
+                        "recommendations": "Focus on clarity and impact",
+                        "impact": "Clear descriptions improve understanding",
+                    },
+                },
+            },
+            {
+                "id": "experience",
+                "title": "Experience Analysis",
+                "icon_html": '<i class="fas fa-briefcase"></i>',
+                "score": analysis_data["experience_analysis"]["score"],
+                "details": {
+                    "strengthsHeading": "Experience Highlights",
+                    "improvementsHeading": "Areas to Enhance",
+                    "strengths": analysis_data["experience_analysis"]["details"][
+                        "experience"
+                    ],
+                    "improvements": analysis_data["experience_analysis"]["details"][
+                        "improve"
+                    ],
+                    "feedback": {
+                        "overview": analysis_data["experience_analysis"]["reason"],
+                        "recommendations": "Highlight relevant experience",
+                        "impact": "Experience demonstrates practical skills",
+                    },
+                },
+            },
+            {
+                "id": "education",
+                "title": "Education Analysis",
+                "icon_html": '<i class="fas fa-graduation-cap"></i>',
+                "score": analysis_data["education_analysis"]["score"],
+                "details": {
+                    "strengthsHeading": "Educational Background",
+                    "improvementsHeading": "Recommended Courses",
+                    "strengths": analysis_data["education_analysis"]["details"][
+                        "background"
+                    ],
+                    "improvements": analysis_data["education_analysis"]["details"][
+                        "suggest"
+                    ],
+                    "feedback": {
+                        "overview": analysis_data["education_analysis"]["reason"],
+                        "recommendations": "Consider additional certifications",
+                        "impact": "Education provides foundational knowledge",
+                    },
+                },
+            },
+            {
+                "id": "projects",
+                "title": "Projects Analysis",
+                "icon_html": '<i class="fas fa-project-diagram"></i>',
+                "score": analysis_data["projects_analysis"]["score"],
+                "details": {
+                    "strengthsHeading": "Completed Projects",
+                    "improvementsHeading": "Suggested Projects",
+                    "strengths": analysis_data["projects_analysis"]["projects"][
+                        "completed"
+                    ],
+                    "improvements": analysis_data["projects_analysis"]["projects"][
+                        "suggested"
+                    ],
+                    "feedback": {
+                        "overview": analysis_data["projects_analysis"]["reason"],
+                        "recommendations": "Add relevant projects",
+                        "impact": "Projects showcase practical application",
+                    },
+                },
+            },
+        ]
+        
+        context = {
+            "analysis": analysis_data,
+            "sections": sections,
+        }
+        
+        # Debug logging
+        logger.debug(f"Rendering template with context: {context}")
+        
+        return render(
+            request,
+            "AI_trainer/resume_analysis.html",
+            context
+        )
+        
+    except ResumeAnalysis.DoesNotExist:
+        logger.error(f"Analysis not found: {analysis_id}")
+        return HttpResponse("Analysis not found", status=404)
+    except Exception as e:
+        logger.error(f"Unexpected error in display_analysis: {str(e)}")
+        return HttpResponse(f"Error processing analysis: {str(e)}", status=500)

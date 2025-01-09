@@ -21,4 +21,4 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("", include("AI_trainer.urls")),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] 

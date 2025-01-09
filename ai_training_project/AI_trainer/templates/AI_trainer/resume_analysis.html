@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Analysis Results</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    {% load static %}
+    <link
+      rel="stylesheet"
+      href="{% static 'AI_trainer/css/resume_analysis.css' %}"
+    />
+  </head>
+  <body>
+    <div class="min-h-screen bg-gray-50 py-8">
+      <div class="container mx-auto">
+        <div class="w-full">
+          <!-- Score Meter -->
+          <div class="px-6 mb-8">
+            <div class="score-meter">
+              <div class="score-circle">
+                <span class="score-number"
+                  >{{ analysis.overall_summary.total_score }}%</span
+                >
+                <span class="score-label">Overall Score</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analysis Grid -->
+          <div class="analysis-grid">
+            <!-- Sections List -->
+            <div class="sections-list">
+              <div class="section-buttons">
+                {% for section in sections %}
+                <button
+                  class="section-btn {% if forloop.first %}active{% endif %}"
+                  data-section="{{ section.id }}"
+                >
+                  <div class="section-icon">{{ section.icon_html|safe }}</div>
+                  <div class="section-info">
+                    <span class="section-title">{{ section.title }}</span>
+                    <span class="section-score">{{ section.score }}%</span>
+                  </div>
+                </button>
+                {% endfor %}
+              </div>
+
+              <button id="downloadBtn" class="download-btn">
+                <i class="fas fa-download"></i>
+                <span>Download Full Report</span>
+              </button>
+            </div>
+
+            <!-- Section Details -->
+            <div class="section-details">
+              {% for section in sections %}
+              <div
+                class="detail-panel"
+                id="{{ section.id }}-panel"
+                {% if not forloop.first %}style="display: none;"{% endif %}
+              >
+                <h2>{{ section.title }}</h2>
+
+                <div class="detail-content">
+                  <div class="strengths-section">
+                    <h3>{{ section.details.strengthsHeading }}</h3>
+                    <ul>
+                      {% for strength in section.details.strengths %}
+                      <li>{{ strength }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+
+                  <div class="improvements-section">
+                    <h3>{{ section.details.improvementsHeading }}</h3>
+                    <ul>
+                      {% for improvement in section.details.improvements %}
+                      <li>{{ improvement }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+
+                  <div class="feedback-section">
+                    <h3>Feedback</h3>
+                    <p class="overview">{{ section.details.feedback.overview }}</p>
+                    <p class="recommendations">
+                      {{ section.details.feedback.recommendations }}
+                    </p>
+                    <p class="impact">{{ section.details.feedback.impact }}</p>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Section switching
+        const sectionBtns = document.querySelectorAll(".section-btn");
+        const detailPanels = document.querySelectorAll(".detail-panel");
+
+        sectionBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            // Update active button
+            sectionBtns.forEach((b) => b.classList.remove("active"));
+            this.classList.add("active");
+
+            // Show corresponding panel
+            const sectionId = this.dataset.section;
+            detailPanels.forEach((panel) => {
+              panel.style.display =
+                panel.id === `${sectionId}-panel` ? "block" : "none";
+            });
+          });
+        });
+
+        // PDF Download
+        document
+          .getElementById("downloadBtn")
+          .addEventListener("click", function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add Title
+            doc.setFontSize(18);
+            doc.text("Resume Analysis Report", 10, 10);
+
+            // Add Overall Score
+            doc.setFontSize(14);
+            doc.text(
+              `Overall Score: {{ analysis.overall_summary.total_score }}%`,
+              10,
+              20
+            );
+
+            // Create table data
+            const tableData = [];
+            {% for section in sections %}
+            tableData.push([
+              "{{ section.title }}",
+              "{{ section.score }}%",
+              "{{ section.details.strengths|join:', ' }}",
+              "{{ section.details.improvements|join:', ' }}",
+            ]);
+            {% endfor %}
+
+            // Add table
+            doc.autoTable({
+              head: [["Section", "Score", "Strengths", "Improvements"]],
+              body: tableData,
+              startY: 30,
+            });
+
+            // Save PDF
+            doc.save("Resume_Analysis_Report.pdf");
+          });
+      });
+    </script>
+  </body>
+</html>

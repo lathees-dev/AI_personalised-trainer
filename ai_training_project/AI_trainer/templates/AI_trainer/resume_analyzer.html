@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Analyzer</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    {% load static %}
+    <link
+      rel="stylesheet"
+      href="{% static 'AI_trainer/css/resume_analyzer.css' %}"
+    />
+  </head>
+  <body>
+    <div class="min-h-screen bg-blue-0">
+      <div class="container">
+        <div class="analyzer-card">
+          <div class="analyzer-header">
+            <i class="fas fa-file-alt file-icon"></i>
+            <h1>Resume Analyzer</h1>
+          </div>
+
+          <div class="analyzer-form">
+            <form id="resumeAnalyzerForm" enctype="multipart/form-data">
+              {% csrf_token %}
+
+              <div class="form-group">
+                <label for="id_job_description">Job Description</label>
+                {{ form.job_description }}
+              </div>
+
+              <div class="form-group">
+                <label for="id_resume_file">Upload Resume</label>
+                <div
+                  class="file-upload-area"
+                  id="dropZone"
+                  onclick="document.getElementById('id_resume_file').click()"
+                >
+                  <i class="fas fa-upload upload-icon"></i>
+                  <p class="upload-text">
+                    Drag and drop your resume here, or click to browse
+                  </p>
+                  <p class="selected-file" id="selectedFile"></p>
+                  <input
+                    type="file"
+                    id="id_resume_file"
+                    name="resume_file"
+                    accept=".pdf"
+                    style="display: none"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button type="submit" class="analyze-btn" id="submitBtn" disabled>
+                <i class="fas fa-paper-plane send-icon"></i>
+                <span>Analyze Resume</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div id="analysisResult" class="analysis-result" style="display: none">
+          <h2>Analysis Results</h2>
+          <div id="analysisContent"></div>
+        </div>
+
+        <div id="loadingSpinner" class="loading-spinner" style="display: none">
+          <div class="spinner"></div>
+          Analyzing...
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const dropZone = document.getElementById("dropZone");
+        const fileInput = document.getElementById("id_resume_file");
+        const selectedFileText = document.getElementById("selectedFile");
+        const submitBtn = document.getElementById("submitBtn");
+        const jobDescription = document.querySelector("textarea");
+
+        // Drag and drop functionality
+        dropZone.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.add("dragging");
+        });
+
+        dropZone.addEventListener("dragleave", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove("dragging");
+        });
+
+        dropZone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove("dragging");
+          const file = e.dataTransfer.files[0];
+          if (file?.type === "application/pdf") {
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelection(file);
+          } else {
+            alert("Please upload a PDF file");
+          }
+        });
+
+        fileInput.addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (file?.type === "application/pdf") {
+            handleFileSelection(file);
+          } else {
+            alert("Please upload a PDF file");
+            fileInput.value = "";
+            selectedFileText.textContent = "";
+            updateSubmitButton();
+          }
+        });
+
+        function handleFileSelection(file) {
+          selectedFileText.textContent = `Selected: ${file.name}`;
+          updateSubmitButton();
+        }
+
+        jobDescription.addEventListener("input", updateSubmitButton);
+
+        function updateSubmitButton() {
+          const hasFile = fileInput.files.length > 0;
+          const hasDescription = jobDescription.value.trim() !== "";
+          submitBtn.disabled = !(hasFile && hasDescription);
+        }
+
+        // Form submission
+        document
+          .getElementById("resumeAnalyzerForm")
+          .addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const resultDiv = document.getElementById("analysisResult");
+            const contentDiv = document.getElementById("analysisContent");
+            const spinner = document.getElementById("loadingSpinner");
+            submitBtn.disabled = true;
+
+            try {
+              resultDiv.style.display = "none";
+              spinner.style.display = "block";
+
+              const response = await fetch(window.location.href, {
+                method: "POST",
+                body: formData,
+              });
+
+              const data = await response.json();
+
+              if (data.success) {
+                const analysis = data.analysis;
+                let html = `
+                                <div class="analysis-section">
+                                    <h3>ATS Compatibility Score: ${
+                                      analysis.ats_parse_rate.score
+                                    }%</h3>
+                                    <p>${analysis.ats_parse_rate.reason}</p>
+                                    <p><strong>Recommendations:</strong> ${
+                                      analysis.ats_parse_rate.recommendations
+                                    }</p>
+                                </div>
+
+                                <div class="analysis-section">
+                                    <h3>Skills Analysis</h3>
+                                    <h4>Hard Skills Match: ${
+                                      analysis.skills_analysis.hard_skills.score
+                                    }%</h4>
+                                    <p><strong>Matched Skills:</strong> ${analysis.skills_analysis.hard_skills.matched.join(
+                                      ", "
+                                    )}</p>
+                                    <p><strong>Missing Skills:</strong> ${analysis.skills_analysis.hard_skills.missing.join(
+                                      ", "
+                                    )}</p>
+                                    
+                                    <h4>Soft Skills</h4>
+                                    <p><strong>Identified:</strong> ${analysis.skills_analysis.soft_skills.identified.join(
+                                      ", "
+                                    )}</p>
+                                    <p><strong>Recommended:</strong> ${analysis.skills_analysis.soft_skills.recommended.join(
+                                      ", "
+                                    )}</p>
+                                </div>
+
+                                <div class="analysis-section">
+                                    <h3>Experience Match: ${
+                                      analysis.experience_match.score
+                                    }%</h3>
+                                    <p>${analysis.experience_match.feedback}</p>
+                                    <p><strong>Highlights:</strong></p>
+                                    <ul>
+                                        ${analysis.experience_match.highlights
+                                          .map((h) => `<li>${h}</li>`)
+                                          .join("")}
+                                    </ul>
+                                </div>
+
+                                <div class="analysis-section">
+                                    <h3>Overall Assessment: ${
+                                      analysis.overall_summary.total_score
+                                    }%</h3>
+                                    <p>${analysis.overall_summary.summary}</p>
+                                    <p><strong>Key Strengths:</strong></p>
+                                    <ul>
+                                        ${analysis.overall_summary.key_strengths
+                                          .map((s) => `<li>${s}</li>`)
+                                          .join("")}
+                                    </ul>
+                                    <p><strong>Areas for Improvement:</strong></p>
+                                    <ul>
+                                        ${analysis.overall_summary.improvement_areas
+                                          .map((a) => `<li>${a}</li>`)
+                                          .join("")}
+                                    </ul>
+                                </div>
+                            `;
+                contentDiv.innerHTML = html;
+                resultDiv.style.display = "block";
+              } else {
+                alert("Error: " + data.error);
+              }
+            } catch (error) {
+              console.error("Full error:", error);
+              alert(
+                "Error analyzing resume. Please check the console for details."
+              );
+            } finally {
+              spinner.style.display = "none";
+              submitBtn.disabled = false;
+            }
+          });
+      });
+    </script>
+  </body>
+</html>

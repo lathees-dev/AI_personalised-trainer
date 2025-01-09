@@ -1,0 +1,198 @@
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  color: #2d3748;
+  background-color: #f7fafc;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Score Meter */
+.score-meter {
+  text-align: center;
+  padding: 2rem;
+}
+
+.score-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: linear-gradient(to right, #3182ce, #2b6cb0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin: 0 auto;
+}
+
+.score-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.score-label {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Analysis Grid */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: 2rem;
+  padding: 0 1.5rem;
+}
+
+/* Sections List */
+.sections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+}
+
+.section-btn:hover {
+  border-color: #3182ce;
+}
+
+.section-btn.active {
+  background: #3182ce;
+  color: white;
+}
+
+.section-icon {
+  font-size: 1.25rem;
+  width: 2rem;
+  text-align: center;
+}
+
+.section-info {
+  flex: 1;
+}
+
+.section-title {
+  display: block;
+  font-weight: 500;
+}
+
+.section-score {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.download-btn {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.download-btn:hover {
+  background: #2b6cb0;
+}
+
+/* Section Details */
+.section-details {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.detail-panel h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #2d3748;
+}
+
+.detail-content {
+  display: grid;
+  gap: 2rem;
+}
+
+.strengths-section,
+.improvements-section,
+.feedback-section {
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+}
+
+.detail-content h3 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: #2d3748;
+}
+
+.detail-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.detail-content li {
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+}
+
+.feedback-section p {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+  color: #4a5568;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sections-list {
+    order: 2;
+  }
+
+  .section-details {
+    order: 1;
+  }
+}
