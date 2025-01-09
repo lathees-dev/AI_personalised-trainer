@@ -2,7 +2,11 @@
 *.pyc
 *.pyo
 *.pyd
+
 __pycache__/
+
+_pycache_/
+
 *.swp
 *.swo
 
@@ -26,6 +30,9 @@ local_settings.py
 # Migrations
 */migrations/*.py
 */migrations/*.pyc
+
+/migrations/.py
+/migrations/.pyc
 
 # Node.js (for frontend assets, if applicable)
 node_modules/

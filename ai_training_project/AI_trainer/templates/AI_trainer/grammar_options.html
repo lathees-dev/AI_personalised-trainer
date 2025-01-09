@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Options</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 30px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .option-card {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .option-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .option-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .option-card h3 {
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+        .option-card a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 22px;
+            border-radius: 5px;
+            margin: 10px auto 15px;
+            width: 80%;
+            transition: background-color 0.3s;
+            background-color: #28a745;
+        }
+        .option-card a:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Grammar Options</h1>
+    <div class="options">
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Prepositions" alt="Prepositions">
+            <a href="{% url 'AI_trainer:exercise_options' 'preposition' %}">Prepositions</a>
+        </div>
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Articles" alt="Articles">
+            <a href="{% url 'AI_trainer:exercise_options' 'articles' %}">Articles</a>
+        </div>
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Sentence+Formation" alt="Sentence Formation">
+            <a href="{% url 'AI_trainer:exercise_options' 'sentence_formation' %}">Sentence Formation</a>
+        </div>
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Active+Passive" alt="Active & Passive Voice">
+            <a href="{% url 'AI_trainer:exercise_options' 'active_passive' %}">Active & Passive Voice</a>
+        </div>
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Direct+Indirect" alt="Direct & Indirect Speech">
+            <a href="{% url 'AI_trainer:exercise_options' 'direct_indirect' %}">Direct & Indirect Speech</a>
+        </div>
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Conjunctions" alt="Conjunctions">
+            <a href="{% url 'AI_trainer:exercise_options' 'conjunctions' %}">Conjunctions</a>
+        </div>
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Interjections" alt="Interjections">
+            <a href="{% url 'AI_trainer:exercise_options' 'interjections' %}">Interjections</a>
+        </div>
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Nouns" alt="Nouns">
+            <a href="{% url 'AI_trainer:exercise_options' 'nouns' %}">Nouns</a>
+        </div>
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Pronouns" alt="Pronouns">
+            <a href="{% url 'AI_trainer:exercise_options' 'pronouns' %}">Pronouns</a>
+        </div>
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Tenses" alt="Tenses">
+            <a href="{% url 'AI_trainer:exercise_options' 'tenses' %}">Tenses</a>
+        </div>
+         <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Verbs+%26+Adverbs" alt="Verbs & Adverbs">
+            <a href="{% url 'AI_trainer:exercise_options' 'verbs_adverbs' %}">Verbs & Adverbs</a>
+         </div>
+         <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Adjectives" alt="Adjectives">
+            <a href="{% url 'AI_trainer:exercise_options' 'adjectives' %}">Adjectives</a>
+        </div>
+        <br><br><br><br>
+        <h2>Practice</h2><br>
+        <div class="option-card">
+            <img src="https://via.placeholder.com/200x150?text=Mock+Test" alt="Mixed Mock Test">
+            <a href="{% url 'AI_trainer:mixed_mock_test' %}">Grammar Mock Test</a>
+        </div>
+    </div>
+</body>
+</html>

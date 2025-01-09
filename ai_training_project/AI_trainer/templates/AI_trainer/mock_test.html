@@ -1,0 +1,97 @@
+{% load custom_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Mock Test</title>
+ <style>
+     body {
+         font-family: Arial, sans-serif;
+         background-color: #121212;
+         color: #fff;
+         text-align: center;
+         padding: 20px;
+     }
+     h1 {
+         margin-bottom: 20px;
+     }
+     .question-container {
+         margin: 30px auto;
+         max-width: 600px;
+         padding: 20px;
+         background-color: #1e1e1e;
+         border-radius: 10px;
+         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+     }
+     .question {
+         font-size: 1.2rem;
+         margin-bottom: 20px;
+     }
+     .options {
+         display: flex;
+         flex-direction: column;
+         gap: 10px;
+     }
+      .option-button {
+        background-color: #2b2b2b;
+        color: #fff;
+        border: none;
+        margin-top:1.5px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+     .option-button:hover {
+         background-color: rgb(101, 229, 202);
+          color: #fff;
+     }
+    .message {
+          margin-top: 20px;
+          font-size: 1.2rem;
+     }
+ </style>
+</head>
+<body>
+ <h1>{{ exercise_type|capfirst }} Mock Test</h1>
+ {% if error %}
+     <p style="color: red;">{{ error }}</p>
+ {% else %}
+     <p>Question: {{ current_question_number }}/{{ total_questions }}</p>
+     <div class="question-container">
+         {% with current_question=questions|slice:current_question_number|last %}
+             <p class="question">{{ current_question.sentence }}</p>
+             <div class="options">
+                <form method="post" id="mock-test-form" action="{% if exercise_type %}{% url 'AI_trainer:mock_test_submit' exercise_type %}{% else %}{% url 'AI_trainer:mixed_mock_test_submit' %}{% endif %}">
+                     {% csrf_token %}
+                     {% for option in current_question.options %}
+                         <button type="button" class="option-button"
+                               onclick="selectOption(this)" value="{{ option }}">
+                               {{ option }}
+                         </button>
+                     {% endfor %}
+                     <div class="submit-btn-container" style="display: none;">
+                         <button type="submit" class="option-button">Submit</button>
+                     </div>
+                     <input type="hidden" name="selected_option" id="selectedOptionInput">
+                </form>
+             </div>
+         {% endwith %}
+     </div>
+     <div class="message"></div>
+ {% endif %}
+ <script>
+     function selectOption(button) {
+         const buttons = document.querySelectorAll('.option-button');
+         buttons.forEach(btn => {
+             btn.classList.remove('selected');
+         });
+         button.classList.add('selected');
+         document.getElementById('selectedOptionInput').value = button.value;
+         document.querySelector('.submit-btn-container').style.display = 'block';
+     }
+ </script>
+</body>
+</html>
