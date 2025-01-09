@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Self-Intro with AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        form h2 {
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        #output {
+            white-space: pre-wrap;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Build Self-Intro with AI</h1>
+    </header>
+    <main>
+        <form id="build_ai_form" onsubmit="event.preventDefault(); handleFormSubmit('build_with_ai');">
+            {% csrf_token %}
+            <label>Name: <input type="text" name="name" placeholder="Enter your name"></label>
+            <label>Place: <input type="text" name="place" placeholder="Enter your location"></label>
+            <label>College: <input type="text" name="college" placeholder="Enter your college"></label>
+            <label>Stream: <input type="text" name="stream" placeholder="Enter your stream"></label>
+            <label>Area of Interest: <input type="text" name="area_of_interest" placeholder="Enter your area of interest"></label>
+            <label>Skill Set: <input type="text" name="skill_set" placeholder="Enter your skills"></label>
+            <label>Achievements: <input type="text" name="achievements" placeholder="Enter your achievements"></label>
+            <label>Experience: <input type="text" name="experience" placeholder="Enter your experience"></label>
+            <label>Project Description: <input type="text" name="project_desc" placeholder="Enter project details"></label>
+            <label>Short-Term Goal: <input type="text" name="short_term_goal" placeholder="Enter short-term goal"></label>
+            <label>Long-Term Goal: <input type="text" name="long_term_goal" placeholder="Enter long-term goal"></label>
+            <button type="submit">Generate Self-Intro</button>
+        </form>
+        <hr>
+        <h2>Output</h2>
+        <pre id="output">Output will be displayed here...</pre>
+    </main>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        async function handleFormSubmit(action) {
+            const formData = new FormData(document.getElementById("build_ai_form"));
+            const payload = { action };
+
+            if (action === "build_with_ai") {
+                payload.user_input = {
+                    name: formData.get("name"),
+                    place: formData.get("place"),
+                    college: formData.get("college"),
+                    stream: formData.get("stream"),
+                    area_of_interest: formData.get("area_of_interest"),
+                    skill_set: formData.get("skill_set"),
+                    achievements: formData.get("achievements"),
+                    experience: formData.get("experience"),
+                    project_desc: formData.get("project_desc"),
+                    short_term_goal: formData.get("short_term_goal"),
+                    long_term_goal: formData.get("long_term_goal"),
+                };
+            }
+
+            try {
+                const response = await fetch("{% url 'AI_trainer:self_intro' %}", {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(payload),
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById("output").innerText = data.output;
+                } else {
+                    document.getElementById("output").innerText = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                document.getElementById("output").innerText = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
